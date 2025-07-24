@@ -1,0 +1,37 @@
+{
+    "adverbial_clause": {
+        "prompt_template": "Does the following have an adverbial clause?\n\"{INPUT_0}\"\nOnly output 'true' or 'false'.\n",
+        "examples": [
+            [["Before she left the house, Mary checked if she had her keys."], "true"],
+            [["I love eating cabbages."], "false"]
+        ]
+    },
+    "joining_phrase": {
+        "prompt_template": "Does the following have a joining phrarse?\n\"{INPUT_0}\"\nOnly output 'true' or 'false'.\n",
+        "examples": [
+            [["The apples and the broccoli were cheap."], "true"],
+            [["They went to the beach today."], "false"]
+        ]
+    },
+    "comparative_statement": {
+        "prompt_template": "Does the following have a comparative statement?\n\"{INPUT_0}\"\nOnly output 'true' or 'false'.\n",
+        "examples": [
+            [["The house was much bigger than the cow."], "true"],
+            [["I love eating cabbages."], "false"]
+        ]
+    },
+    "re_symmetry": {
+        "prompt_template": "Is the following relation symmetric? As in, it works both ways?\n\"{INPUT_0}\"\nOnly output 'true' or 'false'.\n",
+        "examples": [
+            [["sibling"], "true"],
+            [["works for"], "false"]
+        ]
+    },
+    "re_asymmetry": {
+        "prompt_template": "Is the following relation asymmetric? As in, it doesn't work both ways?\n\"{INPUT_0}\"\nOnly output 'true' or 'false'.\n",
+        "examples": [
+            [["works for"], "true"],
+            [["sibling"], "false"]
+        ]
+    }
+}

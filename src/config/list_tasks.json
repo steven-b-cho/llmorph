@@ -1,0 +1,88 @@
+{
+    "question_answering": {
+        "func_db": {
+            "class": "relations.func_db.DBSquad2"
+        },
+        "func_sut": {
+            "class": "relations.func_sut.SUTLLM",
+            "kwargs": {"$template": "sut_prompt:question_answering"}
+        },
+        "replacement_rules": {
+            "replace": [
+                {
+                    "prop_name": "func_or",
+                    "from_class": "relations.func_or.OREquivalence",
+                    "to_value": {"class": "relations.func_or.ORBERTSimilarity", "kwargs": {"threshold": 0.4}}
+                },
+                {
+                    "prop_name": "func_or",
+                    "from_class": "relations.func_or.ORDifference",
+                    "to_value": {"class": "relations.func_or.ORBERTNotSimilarity", "kwargs": {"threshold": 0.8}}
+                }
+            ],
+            "add_to": {
+                "func_it": {"transform_indices": [[0], [1], [0, 1]]}
+            }
+        }
+    },
+    "inference": {
+        "func_db": {
+            "class": "relations.func_db.DBSNLI"
+        },
+        "func_sut": {
+            "class": "relations.func_sut.SUTLLM",
+            "kwargs": {"$template": "sut_prompt:inference"}
+        },
+        "replacement_rules": {
+            "add_to": {
+                "func_it": {"transform_indices": [[0], [1], [0, 1]]}
+            }
+        }
+    },
+    "sentiment_analysis_continuous": {
+        "func_db": {
+            "class": "relations.func_db.DBSST2"
+        },
+        "func_sut": {
+            "class": "relations.func_sut.SUTLLM",
+            "kwargs": {"$template": "sut_prompt:sentiment_analysis_continuous"}
+        },
+        "replacement_rules": {
+            "replace": [
+                {
+                    "prop_name": "func_or",
+                    "from_class": "relations.func_or.OREquivalence",
+                    "to_value": {"class": "relations.func_or.OREquivalenceNumeric", "kwargs": {"error": 0.11}}
+                },
+                {
+                    "prop_name": "func_or",
+                    "from_class": "relations.func_or.ORDifference",
+                    "to_value": {"class": "relations.func_or.ORDifferenceNumeric", "kwargs": {"error": 0.11}}
+                }
+            ]
+        }
+    },
+    "relation_extraction": {
+        "func_db": {
+            "class": "relations.func_db.DBReDocRED"
+        },
+        "func_sut": {
+            "class": "relations.func_sut.SUTLLM",
+            "kwargs": {"$template": "sut_prompt:relation_extraction"}
+        },
+        "replacement_rules": {
+            "replace": [
+                {
+                    "prop_name": "func_or",
+                    "from_class": "relations.func_or.OREquivalence",
+                    "to_value": {"class": "relations.func_or.ORBERTSimilarity", "kwargs": {"threshold": 0.4}}
+                },
+                {
+                    "prop_name": "func_or",
+                    "from_class": "relations.func_or.ORDifference",
+                    "to_value": {"class": "relations.func_or.ORBERTNotSimilarity", "kwargs": {"threshold": 0.8}}
+                }
+            ]
+        }
+    }
+}

@@ -1,0 +1,57 @@
+{
+    "run_all": false,
+
+    "tasks": {
+        "question_answering": [""],
+        "inference": [""],
+        "relation_extraction": [""],
+        "sentiment_analysis_continuous": [""]
+    },
+    "llm_list": [
+        "nous-hermes-2-mixtral-8x7b-dpo",
+        "llama-3.1-70b-instruct",
+        "gpt-4-1106"
+    ],
+
+    "data_start_index": -1,
+    "data_end_index": -1,
+
+    "checkpoint_interval": -1,
+    "continue_from_checkpoint": false,
+
+    "llm_key_file": "security/token-key.jwt",
+    "llm_wait_time": 10,
+    "llm_max_retries": -1,
+    "llm_endpoint": "https://api.openai.com/v1",
+    "llm_for_transformation": "nous-hermes-2-mixtral-8x7b-dpo",
+
+    "only_generate_followup_inputs": false,
+    "only_generate_source": false,
+
+    "cache_source_inputs": true,
+    "cache_source_outputs": true,
+    "cache_followup_inputs": true,
+    "cache_verify": true,
+
+    "use_existing_source_inputs": true,
+    "existing_source_inputs": "data/data-example/source_inputs/source_inputs.json",
+    
+    "dir_base_default":          "data/data-example",
+    "dir_base_checkpoints":      "data/data-example",
+    "dir_base_logs":             "data/data-example",
+    "dir_base_source_inputs":    "data/data-example",
+    "dir_base_source_outputs":   "data/data-example",
+    "dir_base_followup_inputs":  "data/data-example",
+    "dir_base_vsi":              "data/data-example",
+    "dir_base_vso":              "data/data-example",
+    "dir_base_vfi":              "data/data-example",
+
+    "dir_checkpoints":      "data/data-example/checkpoints",
+    "dir_logs":             "data/data-example/results",
+    "dir_source_inputs":    "data/data-example/source_inputs",
+    "dir_source_outputs":   "data/data-example/source_outputs",
+    "dir_followup_inputs":  "data/data-example/followup_inputs",
+    "dir_vsi":              "data/data-example/verify_source_inputs",
+    "dir_vso":              "data/data-example/verify_source_outputs",
+    "dir_vfi":              "data/data-example/verify_followup_inputs"
+}

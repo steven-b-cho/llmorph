@@ -1,0 +1,3 @@
+#ignore securirty token
+token-key.jwt
+token-key*

@@ -1,0 +1,17 @@
+{
+    "tasks": {
+        "question_answering": ["1", "2"]
+    },
+    "llm_list": [
+        "gpt-4-1106"
+    ],
+
+    "checkpoint_interval": 50,
+    "continue_from_checkpoint": true,
+
+    "llm_key_file": "security/token-key.jwt",
+
+    "existing_source_inputs": "data/data-example/source_inputs/source_inputs.json",
+
+    "dir_base_default": "data/data-example"
+}

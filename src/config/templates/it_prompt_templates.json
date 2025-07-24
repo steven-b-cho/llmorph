@@ -1,0 +1,226 @@
+{
+    "synonym_replacement": {
+        "prompt_template": "Replace words in the following with synonyms such that the sentence means the same:\n\"{INPUT_0}\"\nOnly output the changed text, nothing else.\n",
+        "examples": [
+            [["I am smiling widely right now!"], "I am grinning widely right now!"],
+            [["Everyone loves to eat, don't you know?"], "Everyone likes to eat, don't you know?"]
+        ]
+    },
+    "negate": {
+        "prompt_template": "Negate the following text with minimal change:\n\"{INPUT_0}\"\nOnly output the changed text, nothing else.",
+        "examples": [
+            [["Who was the leader of Norway?"], "Who wasn't the leader of Norway?"],
+            [["The President ate a cabbage."], "The President didn't eat a cabbage."]
+        ]
+    },
+    "negate1": {
+        "prompt_template": "Make the following text have opposite meaning, with minimal change:\n\"{INPUT_0}\"\nOnly output the changed text, nothing else.",
+        "examples": [
+            [["Who was the leader of Norway?"], "Who wasn't the leader of Norway?"],
+            [["I love to look at pictures of cats."], "I hate looking at pictures of cats."]
+        ]
+    },
+    "antonym_replacement": {
+        "prompt_template": "Replace words in the following with antonyms such that the sentence means something different:\n\"{INPUT_0}\"\nOnly output the changed text, nothing else.",
+        "examples": [
+            [["Is Scott and Sid based on a true story?"], "Is Scott and Sid based on a false story?"],
+            [["I fell asleep at 6pm."], "I woke up at 6pm."]
+        ]
+    },
+    "paraphrasing": {
+        "prompt_template": "Paraphrase the following text:\n\"{INPUT_0}\"\nOnly output the changed text, nothing else.",
+        "examples": [
+            [["I ate a cabbage yesterday!"], "Yesterday, I ate a cabbage."],
+            [["There is nothing in the world more sweet than love."], "Love is the sweetest thing in the world."]
+        ]
+    },
+    "misspell": {
+        "prompt_template": "Misspell the following text:\n\"{INPUT_0}\"\nOnly output the changed text, nothing else.",
+        "examples": [
+            [["I ate a cabbage yesterday!"], "i atte a cabbbagae yestedy."],
+            [["There is nothing in the world more sweet than love."], "Thiere is nnothinsg in tkhis world m,ore swefte thn lvov."]
+        ]
+    },
+    "adverbial_position": {
+        "prompt_template": "Change the position of the adverbial clause in the following text:\n\"{INPUT_0}\"\nOnly output the changed text, nothing else.",
+        "examples": [
+            [["Before she left the house, Mary checked if she had her keys."], "Mary checked if she had her keys before she left the house."],
+            [["She sang beautifully, even though she was nervous."], "Even though she was nervous, she sang beautifully."]
+        ]
+    },
+    "abbreviation_replacement": {
+        "prompt_template": "In the following text, identify the words that can be either abbreviated or written in full form, and abbreviate them or write them in full form:\n\"{INPUT_0}\"\nOnly output the changed text, nothing else.",
+        "examples": [
+            [["There's no way we'll finish on time."], "There is no way we will finish on time."],
+            [["I would have done it differently if I had known."], "I'd've done it differently if I'd known."]
+        ]
+    },
+    "word_insertion": {
+        "prompt_template": "Insert random words or phrases throughout the following text:\n\"{INPUT_0}\"\nDo this randomly. Do not change any words from the text iteself. Only output the changed text, nothing else.",
+        "examples": [
+            [["He went to the doctor yesterday and got a diagnosis."], "He went to the doctor yesterday with an armful of cheese and got a diagnosis."],
+            [["She sang beautifully, even though she was nervous."], "She sang beautifully, even though she was blisteringly nervous."]
+        ]
+    },
+    "word_category_replacement": {
+        "prompt_template": "Identify names, pronouns, country names, occupations, and similar in the following text. Change each of these into another of the same type.\n\"{INPUT_0}\"\nOnly output the changed text, nothing else.",
+        "examples": [
+            [["Sarah is an American software engineer. She works for Microsoft."], "John is a Korean factory worker. He works for Samsung."],
+            [["My brother will travel to Japan next month to study Japanese."], "My sister will travel to Italy next year to study Italian."]
+        ]
+    },
+    "number_replacement": {
+        "prompt_template": "Identify numbers in this text, and change them to something different.\n\"{INPUT_0}\"\nOnly output the changed text, nothing else.",
+        "examples": [
+            [["The rod is 3.4m long."], "The rod it 9.5m long."],
+            [["I was born in 1993 and will be turning 53 this year."], "I was born in 1981 and will be turning 64 this year."]
+        ]
+    },
+    "singular_plural": {
+        "prompt_template": "Change all singular words/phrases to plural and/or plural words/phrases to singular.\n\"{INPUT_0}\"\nOnly output the changed text, nothing else.",
+        "examples": [
+            [["I ate a cabbage this morn."], "I ate cabbages this morn."],
+            [["Protestors in boats are blocking the channel."], "A protestor in a boat is blocking the channel."]
+        ]
+    },
+    "tense_change": {
+        "prompt_template": "Rewrite the following in a different tense:\n\"{INPUT_0}\"\nOnly output the changed text, nothing else. If there is no tense to be changed, just copy the input.",
+        "examples": [
+            [["There were people there."], "There will be people there."],
+            [["I want a cat!"], "I wanted a cat!"]
+        ]
+    },
+    "joining_word_swap": {
+        "prompt_template": "Swap phrases around joining words:\n\"{INPUT_0}\"\nOnly output the changed text, nothing else.",
+        "examples": [
+            [["I saw a goose and a bear."], "I saw a bear and a goose."],
+            [["Being funny is different from being sad."], "Being sad is different from being funny."]
+        ]
+    },
+    "comparative_swap": {
+        "prompt_template": "Swap the comparative sentence. Keep the meaning the same.\n\"{INPUT_0}\"\nOnly output the changed text, nothing else.",
+        "examples": [
+            [["Cherries are tastier than pineapples."], "Pineapples are less tasty than cherries."],
+            [["The dinosaur was bigger than the house!"], "The house was smaller than the dinosaur!"]
+        ]
+    },
+    "comparative_swap_invert": {
+        "prompt_template": "Swap the comparative sentence. Make the meaning opposite.\n\"{INPUT_0}\"\nOnly output the changed text, nothing else.",
+        "examples": [
+            [["Cherries are tastier than pineapples."], "Pineapples are tastier than cherries."],
+            [["The dinosaur was bigger than the house!"], "The house was bigger than the dinosaur!"]
+        ]
+    },
+    "comparative_invert": {
+        "prompt_template": "Change the comparative sentence to make the meaning the opposite.\n\"{INPUT_0}\"\nOnly output the changed text, nothing else.",
+        "examples": [
+            [["Cherries are tastier than pineapples."], "Cherries are nastier than pineapples."],
+            [["Was the dinosaur was bigger than the house?"], "Was the dinosaur was smaller than the house?"]
+        ]
+    },
+    "passive_active": {
+        "prompt_template": "If the following is in active voice, rewrite it to passive voice, and vice versa.\n\"{INPUT_0}\"\nOnly output the raw changed text, nothing else.",
+        "examples": [
+            [["Penicillin was discovered by Alex."], "Alex discovered penicillin."],
+            [["The cat ate the cabbage."], "The cabbage was eaten by the cat."]
+        ]
+    },
+    "emphasis_words": {
+        "prompt_template": "Add emphasis words to the following to make it stronger:\n\"{INPUT_0}\"\nOnly output the changed text, nothing else.",
+        "examples": [
+            [["The show was amazing."], "The show was positively amazing."],
+            [["I thought it was a snoozefest."], "I thought it was a downright snoozefest."]
+        ]
+    },
+    "capitalize_words": {
+        "prompt_template": "Text:\n\"{INPUT_0}\"\nIdentify the important words in this text, and CAPITALISE them to make the overall sentence stronger. Only CAPITALISE key words, not everything. Only output the changed text, nothing else.",
+        "examples": [
+            [["The show was amazing."], "The show was AMAZING."],
+            [["I had to tell my friends I hated it."], "I HAD to tell my friends I HATED it."]
+        ]
+    },
+    "declarative_interrogative": {
+        "prompt_template": "If this is a declarative sentence, turn it interrogative, and vice versa:\n\"{INPUT_0}\"\nOnly output the changed text, nothing else.",
+        "examples": [
+            [["The sun rises in the east."], "Does the sun rise in the east?"],
+            [["She will attend the meeting tomorrow."], "Will she attend the meeting tomorrow?"]
+        ]
+    },
+    "remove_keywords": {
+        "prompt_template": "Text:\n\"{INPUT_0}\"\n Identify all the keywords in the text. Then, remove all the keywords. Only output the changed text, nothing else.",
+        "examples": [
+            [["There are 24 koi in this pond."], "There are in this."],
+            [["I had to tell my friends I hated it."], "I had to tell my I it."]
+        ]
+    },
+    "replace_keywords": {
+        "prompt_template": "Identify and replace the keywords from the following with unrelated text:\n\"{INPUT_0}\"\nOnly output the changed text, nothing else.",
+        "examples": [
+            [["There are 24 koi in this pond."], "There are mechanations in this pond."],
+            [["I had to tell my friends I hated it."], "I had to tell my friends I spied on it."]
+        ]
+    },
+    "superset_word": {
+        "prompt_template": "Give a word or phrase that is a broader term of this word:\n\"{INPUT_0}\"\nOnly output the new text, nothing else.",
+        "examples": [
+            [["dog"], "animal"],
+            [["computer"], "electronic device"]
+        ]
+    },
+    "identify_coreferential_word": {
+        "prompt_template": "Text:\n\"{INPUT_0}\"\nTarget word:\n\"{INPUT_1}\"\nSearch through the text and give one word or phrase that is a coreference of the target word. Make sure the coreference word is in the text. Only output the single coreference, nothing else. If there is no coreference, output 'none'.",
+        "examples": [
+            [["The man worked for Microsoft. He was an accountant.", "man", ""], "he"],
+            [["Sarah is the one who stole the chocolate.", "Sarah", ""], "the one"]
+        ],
+        "multi_input": true
+    },
+    "identify_symmetric_word": {
+        "prompt_template": "Text:\n\"{INPUT_0}\"\nTarget word:\n\"{INPUT_1}\"\nSearch through the text and give a word or phrase that is a symmetric to the target word. That is, the symmetric word can replace the target word with no consequence. Make sure the new word is in the text. Only output the new word, nothing else. If there is no symmetric word, output 'none'.",
+        "examples": [
+            [["Bill went to the store with his wife, Sarah, and their son John.", "Bill", ""], "Sarah"],
+            [["Liu, CEO of the West Fish Company (WFC), stole the chocolate.", "West Fish Company", ""], "WFC"]
+        ],
+        "multi_input": true
+    },
+    "generate_symmetric_word": {
+        "prompt_template": "Give a word or phrase that has a symmetric relation to this word:\n\"{INPUT_0}\"\nOnly output the new word, nothing else.",
+        "examples": [
+            [["brother"], "sister"],
+            [["dog"], "cat"]
+        ],
+        "multi_input": true
+    },
+    "generate_premesis_from_hypothesis": {
+        "prompt_template": "Generate a premesis based on the following hypothesis:\n\"{INPUT_1}\"\nOnly output the text, nothing else.",
+        "examples": [
+            [["", "I was outside today."], "I was walking the dog just now."],
+            [["", "She likes cats."], "She takes care of five cats."]
+        ],
+        "multi_input": true
+    },
+    "generate_premesis_from_premesis": {
+        "prompt_template": "Generate a premesis based on the following hypothesis:\n\"{INPUT_0}\"\nOnly output the text, nothing else.",
+        "examples": [
+            [["I was outside today.", ""], "I was walking the dog just now."],
+            [["She likes cats.", ""], "She takes care of five cats."]
+        ],
+        "multi_input": true
+    },
+    "generate_hypothesis_from_premesis": {
+        "prompt_template": "Generate a hypothesis based on the following premesis:\n\"{INPUT_0}\"\nOnly output the text, nothing else.",
+        "examples": [
+            [["I went to the beach this morning.", ""], "I was outside today."],
+            [["She thinks cats are super cute and lovely.", ""], "She likes cats."]
+        ],
+        "multi_input": true
+    },
+    "generate_hypothesis_from_hypothesis": {
+        "prompt_template": "Generate a hypothesis based on the following premesis:\n\"{INPUT_1}\"\nOnly output the text, nothing else.",
+        "examples": [
+            [["", "I went to the beach this morning."], "I was outside today."],
+            [["", "She thinks cats are super cute and lovely."], "She likes cats."]
+        ],
+        "multi_input": true
+    }
+}

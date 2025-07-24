@@ -1,0 +1,31 @@
+{
+    "run_all": false,
+
+    "tasks": {},
+    "llm_list": [],
+
+    "data_start_index": -1,
+    "data_end_index": -1,
+
+    "checkpoint_interval": -1,
+    "continue_from_checkpoint": false,
+
+    "llm_key_file": "security/token-key.jwt",
+    "llm_wait_time": 10,
+    "llm_max_retries": -1,
+    "llm_endpoint": "https://api.openai.com/v1",
+    "llm_for_transformation": null,
+
+    "only_generate_followup_inputs": false,
+    "only_generate_source": false,
+
+    "cache_source_inputs": true,
+    "cache_source_outputs": true,
+    "cache_followup_inputs": true,
+    "cache_verify": true,
+
+    "use_existing_source_inputs": true,
+    "existing_source_inputs": "data/data-example/source_inputs/source_inputs.json",
+    
+    "dir_base_default": "data/data-example"
+}

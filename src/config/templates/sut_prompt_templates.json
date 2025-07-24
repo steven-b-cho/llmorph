@@ -1,0 +1,41 @@
+{
+    "key_idea": {
+        "prompt_template": "In the following sentence, what is the key idea being conveyed?\n\"{INPUT_0}\"\nKeep your answer to a short sentence. Don't mention a 'key idea'."
+    },
+    "question_answering": {
+        "prompt_template": "Here is some information:\n\"{INPUT_0}\"\nUsing only this information, nothing else, answer the following question:\n\"{INPUT_1}\"\nKeep your answer to a short sentence. If you cannot give an answer, write 'unknown'."
+    },
+    "boolean_question_answering": {
+        "prompt_template": "Here is some information:\n\"{INPUT_0}\"\nUsing only this information, nothing else, answer the following yes or no question:\n\"{INPUT_1}\"\nWrite only 'yes', 'no' or 'unknown', nothing else."
+    },
+    "inference": {
+        "prompt_template": "Premesis: \"{INPUT_0}\"\nHypothesis: \"{INPUT_1}\"\nIs this entailment, contradiction, or neutral?\nOnly write a one-word answer."
+    },
+    "semantic_similarity": {
+        "prompt_template": "Sentence 1: \"{INPUT_0}\"\nSentence 2: \"{INPUT_1}\"\nHow similar are these sentences from 0 to 1? Where 0 is completely different and 1 is the same.\nGive only the number."
+    },
+    "sentiment_analysis": {
+        "prompt_template": "You are a sentiment analysis tool. Given a sentence, say if it is 'positive' or 'negative' or 'neutral', nothing else.\nWhat is the sentiment of the following sentence?\n\"{INPUT_0}\"\nOnly write a one-word answer."
+    },
+    "sentiment_analysis_continuous": {
+        "prompt_template": "What is the sentiment of this text from 0 to 1? Where 0 is negative and 1 is positive.\n\"{INPUT_0}\"\nGive an answer even if unsure. Give only a number from 0.0 to 1.0, nothing else. Return only a single number."
+    },
+    "fake_news": {
+        "prompt_template": "Here is some news: \"{INPUT_0}\"\nIs this fake news?\nGive only yes or no."
+    },
+    "named_entity_recognition": {
+        "prompt_template": "Here is some text: \"{INPUT_0}\"\nIdentify the named entities, as well as their types.\nGive only this list."
+    },
+    "coreference_resolution": {
+        "prompt_template": "Here is some text: \"{INPUT_0}\"\nIdentify each phrase and their corresponding coreference(s).\nGive only this list."
+    },
+    "relation_extraction": {
+        "prompt_template": "Text: \"{INPUT_0}\"\nIdentify the relation from \"{INPUT_1}\" to \"{INPUT_2}\" using only the text.\nGive the shortest word or phrase for this relation, nothing else. If there is no relation, or if the words are not in the text, say 'no relation'."
+    },
+    "part_of_speech_tagging": {
+        "prompt_template": "Here is some text: \"{INPUT_0}\"\nIdentify the part-of-speech tag for each of these words.\nGive only this list."
+    },
+    "stance_detection": {
+        "prompt_template": "Sentence 1: \"{INPUT_0}\"\nSentence 2: \"{INPUT_1}\"\nDoes Sentence 1 agree, disagree or neutral with Sentence 2?\nGive only a one-word answer."
+    }
+}

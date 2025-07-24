@@ -1,0 +1,261 @@
+{
+    "general": {
+        "49": {
+            "func_it": {"class": "relations.func_it.ITNone"},
+            "func_or": {"class": "relations.func_or.OREquivalence"}
+        },
+        "8": {
+            "func_it": {"class": "relations.func_it.ITReplaceKeywordSynonym"},
+            "func_or": {"class": "relations.func_or.OREquivalence"}
+        },
+        "51": {
+            "func_it": {"class": "relations.func_it.ITGPT", "kwargs": {"$template": "it_prompt:paraphrasing"}},
+            "func_or": {"class": "relations.func_or.OREquivalence"}
+        },
+        "120": {
+            "func_it": {"class": "relations.func_it.ITNlpaug", "args": ["back_translation"]},
+            "func_or": {"class": "relations.func_or.OREquivalence"}
+        },
+        "127": {
+            "func_it": {"class": "relations.func_it.ITGPT", "kwargs": {"$template": "it_prompt:misspell"}},
+            "func_or": {"class": "relations.func_or.OREquivalence"}
+        },
+        "9": {
+            "func_it": {"class": "relations.func_it.ITGPT", "kwargs": {"$template": "it_prompt:word_insertion"}},
+            "func_or": {"class": "relations.func_or.OREquivalence"}
+        },
+        "149": {
+            "func_it": {"class": "relations.func_it.ITGPTSentence", "kwargs": {"$template": "it_prompt:singular_plural"}},
+            "func_or": {"class": "relations.func_or.OREquivalence"},
+            "exceptions": ["inference"]
+        },
+        "155": {
+            "func_it": {"class": "relations.func_it.ITGPT", "kwargs": {"$template": "it_prompt:tense_change"}},
+            "func_or": {"class": "relations.func_or.OREquivalence"},
+            "exceptions": ["sentiment_analysis_continuous"]
+        },
+        "136": {
+            "func_it": {"class": "relations.func_it.ITGPT", "kwargs": {"$template": "it_prompt:passive_active"}},
+            "func_or": {"class": "relations.func_or.OREquivalence"},
+            "exceptions": ["sentiment_analysis_continuous"]
+        },
+
+        "152": {
+            "func_it": {"class": "relations.func_it.ITNegate"},
+            "func_or": {"class": "relations.func_or.ORDifference"}
+        },
+        "10": {
+            "func_it": {"class": "relations.func_it.ITReplaceKeywordAntonym"},
+            "func_or": {"class": "relations.func_or.ORDifference"}
+        },
+
+        
+        "84": {
+            "func_it": {"class": "relations.func_it.ITConcatRandomSentence"},
+            "func_or": {"class": "relations.func_or.OREquivalence"},
+            "exceptions": ["sentiment_analysis_continuous"]
+        },
+        "137": {
+            "func_it": {"class": "relations.func_it.ITReplaceKeywordCategory"},
+            "func_or": {"class": "relations.func_or.OREquivalence"}
+        },
+        "34": {
+            "func_it": {"class": "relations.func_it.ITRemoveKeywordSentence"},
+            "func_or": {"class": "relations.func_or.ORDifference"}
+        },
+        "25": {
+            "func_it": {"class": "relations.func_it.ITReplaceKeywordRandom"},
+            "func_or": {"class": "relations.func_or.ORDifference"}
+        },
+
+        "102": {
+            "func_it": {"class": "relations.func_it.ITCapitalisation"},
+            "func_or": {"class": "relations.func_or.OREquivalence"}
+        },
+        "19": {
+            "func_it": {"class": "relations.func_it.ITRandomiseSentenceOrder"},
+            "func_or": {"class": "relations.func_or.OREquivalence"},
+            "func_vsi": {"class": "relations.func_verify.VerifyMultipleSentences"},
+            "exceptions": ["sentiment_analysis_continuous", "inference"]
+        },
+
+        "126": {
+            "func_it": {"class": "relations.func_it.ITNlpaug", "args": ["keyboard"]},
+            "func_or": {"class": "relations.func_or.OREquivalence"}
+        },
+        "128": {
+            "func_it": {"class": "relations.func_it.ITNlpaug", "args": ["ocr"]},
+            "func_or": {"class": "relations.func_or.OREquivalence"}
+        },
+
+        
+        "7": {
+            "func_it": {"class": "relations.func_it.ITRandomiseCharacterOrderInWordKeepingEnds"},
+            "func_or": {"class": "relations.func_or.OREquivalence"}
+        },
+        "1": {
+            "func_it": {"class": "relations.func_it.ITReplaceCharacters"},
+            "func_or": {"class": "relations.func_or.OREquivalence"}
+        },
+        "2": {
+            "func_it": {"class": "relations.func_it.ITDeleteCharacters"},
+            "func_or": {"class": "relations.func_or.OREquivalence"}
+        },
+        "4": {
+            "func_it": {"class": "relations.func_it.ITAddCharacters"},
+            "func_or": {"class": "relations.func_or.OREquivalence"}
+        },
+        "5": {
+            "func_it": {"class": "relations.func_it.ITAddSpaces"},
+            "func_or": {"class": "relations.func_or.OREquivalence"}
+        },
+        "6": {
+            "func_it": {"class": "relations.func_it.ITSwapCharacters"},
+            "func_or": {"class": "relations.func_or.OREquivalence"}
+        },
+        "3": {
+            "func_it": {"class": "relations.func_it.ITLeetFormat"},
+            "func_or": {"class": "relations.func_or.OREquivalence"}
+        }
+    },
+    "question_answering": {
+        "9": {
+            "func_it": {"class": "relations.func_it.ITGPT", "kwargs": {"$template": "it_prompt:word_insertion", "transform_indices": [[0]]}}
+        },
+        "19": {
+            "func_it": {"class": "relations.func_it.ITRandomiseSentenceOrder", "kwargs": {"transform_indices": [[0]]}}
+        },
+        "137": {
+            "func_it": {"class": "relations.func_it.ITReplaceKeywordCategoryQA"}
+        },
+        
+        "152": {
+            "func_it": {"class": "relations.func_it.ITNegateQA"},
+            "func_vso": {"class": "relations.func_verify.VerifySetDifference", "args": ["unknown"]}
+        },
+        "10": {
+            "func_it": {"class": "relations.func_it.ITReplaceKeywordAntonymQA"},
+            "func_vso": {"class": "relations.func_verify.VerifySetDifference", "args": ["unknown"]}
+        },
+        "34": {
+            "func_it": {"class": "relations.func_it.ITRemoveKeywordQASentence"},
+            "func_vso": {"class": "relations.func_verify.VerifySetDifference", "args": ["unknown"]}
+        },
+        "25": {
+            "func_it": {"class": "relations.func_it.ITReplaceKeywordRandomQA"},
+            "func_vso": {"class": "relations.func_verify.VerifySetDifference", "args": ["unknown"]}
+        }
+    },
+    "inference": {
+        "77": {
+            "func_it": {"class": "relations.func_it.ITGPTConcatInf", "kwargs": {"$template": "it_prompt:generate_premesis_from_hypothesis", "transform_indices": [[0]]}},
+            "func_or": {"class": "relations.func_or.OREquivalence"},
+            "func_vso": {"class": "relations.func_verify.VerifyEquivalence", "args": ["entailment"]}
+        },
+        "78": {
+            "func_it": {"class": "relations.func_it.ITGPTConcatInf", "kwargs": {"$template": "it_prompt:generate_hypothesis_from_premesis", "transform_indices": [[1]]}},
+            "func_or": {"class": "relations.func_or.OREquivalence"},
+            "func_vso": {"class": "relations.func_verify.VerifyEquivalence", "args": ["entailment"]}
+        },
+        "79": {
+            "func_it": {"class": "relations.func_it.ITGPT", "kwargs": {"$template": "it_prompt:generate_hypothesis_from_hypothesis", "transform_indices": [[1]]}},
+            "func_or": {"class": "relations.func_or.ORNotInverse", "args": ["entailment", "contradiction"]},
+            "func_vso": {"class": "relations.func_verify.VerifyEquivalence", "args": ["entailment"]}
+        },
+        "80": {
+            "func_it": {"class": "relations.func_it.ITGPT", "kwargs": {"$template": "it_prompt:generate_hypothesis_from_premesis", "transform_indices": [[0]]}},
+            "func_or": {"class": "relations.func_or.ORNotInverse", "args": ["entailment", "contradiction"]},
+            "func_vso": {"class": "relations.func_verify.VerifyEquivalence", "args": ["entailment"]}
+        },
+        "9": {
+            "func_it": {"class": "relations.func_it.ITGPT", "kwargs": {"$template": "it_prompt:word_insertion", "transform_indices": [[0]]}}
+        },
+        "84": {
+            "func_it": {"class": "relations.func_it.ITConcatRandomSentence", "kwargs": {"transform_indices": [[0]]}}
+        },
+
+        "152": {
+            "func_vso": {"class": "relations.func_verify.VerifySetDifference", "args": ["neutral"]}
+        },
+        "10": {
+            "func_it": {"class": "relations.func_it.ITReplaceKeywordAntonym", "kwargs": {"transform_indices": [[0],[1]]}},
+            "func_vso": {"class": "relations.func_verify.VerifySetDifference", "args": ["neutral"]}
+        },
+        "34": {
+            "func_vso": {"class": "relations.func_verify.VerifySetDifference", "args": ["neutral"]}
+        },
+        "25": {
+            "func_vso": {"class": "relations.func_verify.VerifySetDifference", "args": ["neutral"]}
+        }
+    },
+    "relation_extraction": {
+        "141": {
+            "func_it": {"class": "relations.func_it.ITPermuteInputs",  "kwargs": {"permute_to": [0,2,1]}},
+            "func_or": {"class": "relations.func_or.ORBERTSimilarity", "kwargs": {"threshold": 0.4}},
+            "func_vso": {"class": "relations.func_verify.VerifySymmetryGPT", "kwargs": {"$template": "verify_prompt:re_symmetry"}}
+        },
+        "142": {
+            "func_it": {"class": "relations.func_it.ITPermuteInputs",  "kwargs": {"permute_to": [0,2,1]}},
+            "func_or": {"class": "relations.func_or.ORGPT", "kwargs": {"$template": "or_prompt:re_opposite_relation"}},
+            "func_vso": {"class": "relations.func_verify.VerifyAsymmetryGPT", "kwargs": {"$template": "verify_prompt:re_symmetry"}}
+        },
+        "57": {
+            "func_it": {"class": "relations.func_it.ITGPT", "kwargs": {"$template": "it_prompt:declarative_interrogative"}},
+            "func_or": {"class": "relations.func_or.ORBERTSimilarity", "kwargs": {"threshold": 0.4}}
+        },
+
+        "152": {
+            "func_it": {"class": "relations.func_it.ITNegateRE"},
+            "func_vso": {"class": "relations.func_verify.VerifySetDifference", "args": ["no relation"]}
+        },
+        "10": {
+            "func_it": {"class": "relations.func_it.ITReplaceKeywordAntonymRE"},
+            "func_vso": {"class": "relations.func_verify.VerifySetDifference", "args": ["no relation"]}
+        },
+        "34": {
+            "func_it": {"class": "relations.func_it.ITRemoveKeywordRESentence"},
+            "func_vso": {"class": "relations.func_verify.VerifySetDifference", "args": ["no relation"]}
+        },
+        "25": {
+            "func_it": {"class": "relations.func_it.ITReplaceKeywordRandomRE"},
+            "func_vso": {"class": "relations.func_verify.VerifySetDifference", "args": ["no relation"]}
+        },
+
+        "137": {
+            "func_it": {"class": "relations.func_it.ITReplaceKeywordCategoryRE"}
+        }
+    },
+    "sentiment_analysis_continuous": {
+        "150": {
+            "func_it": {"class": "relations.func_it.ITReplacePeriodWithExclamation"},
+            "func_or": {"class": "relations.func_or.ORStronger"},
+            "func_vso": {"class": "relations.func_verify.VerifyDifferenceNumeric", "args": [0.5]}
+        },
+        "151": {
+            "func_it": {"class": "relations.func_it.ITGPT", "kwargs": {"$template": "it_prompt:emphasis_words"}},
+            "func_or": {"class": "relations.func_or.ORStronger"},
+            "func_vso": {"class": "relations.func_verify.VerifyDifferenceNumeric", "args": [0.5]}
+        },
+        "154": {
+            "func_it": {"class": "relations.func_it.ITGPT", "kwargs": {"$template": "it_prompt:capitalize_words"}},
+            "func_or": {"class": "relations.func_or.ORStronger"},
+            "func_vso": {"class": "relations.func_verify.VerifyDifferenceNumeric", "args": [0.5]}
+        },
+        "102": {
+            "func_or": {"class": "relations.func_or.ORSameStronger"}
+        },
+        
+        "152": {
+            "func_vso": {"class": "relations.func_verify.VerifyDifferenceRange", "args": [0.4, 0.6]}
+        },
+        "10": {
+            "func_vso": {"class": "relations.func_verify.VerifyDifferenceRange", "args": [0.4, 0.6]}
+        },
+        "34": {
+            "func_vso": {"class": "relations.func_verify.VerifyDifferenceRange", "args": [0.4, 0.6]}
+        },
+        "25": {
+            "func_vso": {"class": "relations.func_verify.VerifyDifferenceRange", "args": [0.4, 0.6]}
+        }
+    }
+}

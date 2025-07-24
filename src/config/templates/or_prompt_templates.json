@@ -1,0 +1,9 @@
+{
+    "re_opposite_relation": {
+        "prompt_template": "Relation 1: \"{INPUT_0}\"\nRelation 2: \"{INPUT_1}\"\nAre these relations opposites? Only output 'true' or 'false'.\n",
+        "examples": [
+            [["parent", "child"], "true"],
+            [["works for", "nationality"], "false"]
+        ]
+    }
+}
