@@ -18,6 +18,10 @@ Video demo: https://youtu.be/sHmqdieCfw4
 ```
 pip install -r requirements.txt
 ```
+and
+```
+nltk.download('punkt')
+```
 
 An OpenAI key is needed in `security/token-key.jwt`.
 
