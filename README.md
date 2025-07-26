@@ -2,7 +2,10 @@
 
 LLMorph is a tool to automatically test Large Language Models (LLMs) using Metamorphic Testing (MT), thorough their use on Natural Language Processing (NLP) tasks.
 This repository is the artifact for our ICSME'25 paper, Metamorphic Testing of Large Language Models for Natural Language Processing.
-In the paper, we extracted 191 metamorphic relations from literature on MT4NLP; this tool currently implements 36.
+This tool currently utilises Metamorphic Relations (MRs) extracted from academic literature on MT4NLP to test LLMs. 
+Currently, LLMorph implements 36 out of the 191 MRs we collected from the literature. More details can be fuond in the mentioned paper.
+
+Paper link (preprint): 
 
 Video demo: https://youtu.be/sHmqdieCfw4
 
@@ -42,13 +45,6 @@ with:
 
 Names of MRs and tasks can be found in `src/config/list_relations.json` and `src/config/list_tasks.json`, respectively.
 
-To run the example, use
-
-```
-python src/main gpt-4o-2024-08-06 question_answering 5 data/data-example/source_inputs/data.json data/data-example
-```
-
-
 #### Advanced Config
 
 To run the tool using the advanced config, use
@@ -65,9 +61,16 @@ Default config values can be found in `src/run_config_defaults.json`.
 
 Results are found in `{base_dir}/results` (with `{base_dir}` specified in the configuration; see above). It includes the LLM name, the task name, the metamorphic relation ID, the source and follow-up inputs, the source and follow-up outputs, and the output satisfactions. Results are saved after every relation tested.
 
-### Changing LLMs
+### Basic Example
 
-This project uses the `openai` python package to manage LLMs. To change the LLM under test, you can specify the relevant model name in the config value `llm_list` and the API endpoint in `llm_endpoint`. To use a different API, or to use a locally hosted LLM, plese modify `src/llm_runner.py`.
+As an example on how to run the tool (and to test installation), use
+
+```
+python src/main gpt-4o-2024-08-06 question_answering 5 data/data-example/source_inputs/data.json data/data-example
+```
+
+This will test the LLM `gpt-4o-2024-08-06` on the `question_answering` task, using the MR with ID `5` (in this case, the "add random spaces" MR), on the single example input value found at `data/data-example/source_inputs/data.json`. Data will be generated in the `data/data-example` directory, with the final output in `data/data-example/results`.
+
 
 ### Example Datasets
 
@@ -78,6 +81,11 @@ python src/data_with_labels.py
 ```
 
 Alternatively, set the config value `use_existing_source_inputs` to `false` to automatically download and use the datasets when the tool is run.
+
+
+### Changing LLMs
+
+This project uses the `openai` python package to manage LLMs. To change the LLM under test, you can specify the relevant model name in `llm` perameter in the CLI; or, if using the config file, specifying the config value `llm_list` and the API endpoint in `llm_endpoint`. To use a different API, or to use a locally hosted LLM, plese modify `src/llm_runner.py`.
 
 ### Adding or modifying tasks
 
