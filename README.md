@@ -1,5 +1,7 @@
 # LLMorph: Metamorphic Testing of Large Language Models
 
+[![DOI](https://zenodo.org/badge/1025446094.svg)](https://doi.org/10.5281/zenodo.16442703)
+
 LLMorph is a tool to automatically test Large Language Models (LLMs) using Metamorphic Testing (MT), thorough their use on Natural Language Processing (NLP) tasks. It leverages the property-based nature MT to uncover faulty behaviours without the need for expensive labelled data. LLMorph is aimed at researchers and developers who want to evaluate the
 robustness of LLM-based NLP systems.
 
