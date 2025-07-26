@@ -1,11 +1,9 @@
 # LLMorph: Metamorphic Testing of Large Language Models
 
 LLMorph is a tool to automatically test Large Language Models (LLMs) using Metamorphic Testing (MT), thorough their use on Natural Language Processing (NLP) tasks.
-This repository is the artifact for our ICSME'25 paper, Metamorphic Testing of Large Language Models for Natural Language Processing.
+This repository is the artifact for our ICSME'25 paper, [Metamorphic Testing of Large Language Models for Natural Language Processing](https://valerio-terragni.github.io/assets/pdf/cho-icsme-2025.pdf).
 This tool currently utilises Metamorphic Relations (MRs) extracted from academic literature on MT4NLP to test LLMs. 
 Currently, LLMorph implements 36 out of the 191 MRs we collected from the literature. More details can be fuond in the mentioned paper.
-
-Paper link (preprint): 
 
 Video demo: https://youtu.be/sHmqdieCfw4
 
