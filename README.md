@@ -61,28 +61,6 @@ Default config values can be found in `src/run_config_defaults.json`.
 
 Results are found in `{base_dir}/results` (with `{base_dir}` specified in the configuration; see above). It includes the LLM name, the task name, the metamorphic relation ID, the source and follow-up inputs, the source and follow-up outputs, and the output satisfactions. Results are saved after every relation tested.
 
-### Basic Example
-
-As an example on how to run the tool (and to test installation), use
-
-```
-python src/main gpt-4o-2024-08-06 question_answering 5 data/data-example/source_inputs/data.json data/data-example
-```
-
-This will test the LLM `gpt-4o-2024-08-06` on the `question_answering` task, using the MR with ID `5` (in this case, the "add random spaces" MR), on the single example input value found at `data/data-example/source_inputs/data.json`. Data will be generated in the `data/data-example` directory, with the final output in `data/data-example/results`.
-
-
-### Example Datasets
-
-Example datasets for each task are currently being pulled from HuggingFace. To download and clean them, you can run 
-
-```
-python src/data_with_labels.py
-```
-
-Alternatively, set the config value `use_existing_source_inputs` to `false` to automatically download and use the datasets when the tool is run.
-
-
 ### Changing LLMs
 
 This project uses the `openai` python package to manage LLMs. To change the LLM under test, you can specify the relevant model name in `llm` perameter in the CLI; or, if using the config file, specifying the config value `llm_list` and the API endpoint in `llm_endpoint`. To use a different API, or to use a locally hosted LLM, plese modify `src/llm_runner.py`.
@@ -94,6 +72,54 @@ Tasks are currently specified via a zero-shot prompting procedure. To add or mod
 ### Adding or modifying metamorphic relations
 
 MRs are implemented as either functions or LLM prompts. To add or modify MRs, go to: `src/relations/func_it.py` and `src/relations/func_or.py` for the implementation of the input transformation and output relation, respectively; `src/config/template/it_prompt_templates.json` or `src/config/template/or_prompt_templates.json` if using a prompted LLM for transformation or comparison; and `src/config/list_relations.json` to specify the particular MR.
+
+## Examples
+
+### Basic Example
+
+As an example on how to run the tool (and to test installation), use, for CLI:
+
+```
+python src/main gpt-4o-2024-08-06 question_answering 5 data/data-example/source_inputs/data.json data/data-example
+```
+
+This will test the LLM `gpt-4o-2024-08-06` on the `question_answering` task, using the MR with ID `5` (in this case, the "add random spaces" MR), on the single example input value found at `data/data-example/source_inputs/data.json`. Data will be generated in the `data/data-example` directory, with the final output in `data/data-example/results`.
+
+### Datasets
+
+Example datasets for each task are currently being pulled from HuggingFace. To download and clean, you can run 
+
+```
+python src/data_with_labels.py
+```
+
+Alternatively, set the config value `use_existing_source_inputs` to `false` to automatically download and use the datasets when the tool is run.
+
+### Paper Reproduction
+
+To reproduce the RQ1 data found in our paper, write the following configuration into `src/config/run_config.json`:
+
+```
+{
+    "run_all": true,
+    "llm_list": [
+        "nous-hermes-2-mixtral-8x7b-dpo",
+        "llama-3.1-70b-instruct",
+        "gpt-4-1106"
+    ],
+    "llm_for_transformation": "nous-hermes-2-mixtral-8x7b-dpo",
+    "use_existing_source_inputs": false,
+    "dir_base_default": "data/data-reproduction"
+}
+```
+
+Then, run
+
+```
+python src/mt_main.py
+```
+
+The results will be found in `data/data-reproduction/results`.
 
 ## Contribution
 
