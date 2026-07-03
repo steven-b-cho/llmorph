@@ -1,17 +1,25 @@
 {
     "tasks": {
-        "question_answering": ["1", "2"]
+        "question_answering": ["1"]
     },
     "llm_list": [
-        "gpt-4-1106"
+        "gpt-5.4"
     ],
 
     "checkpoint_interval": 50,
     "continue_from_checkpoint": true,
 
-    "llm_key_file": "security/token-key.jwt",
+    "llm_key_file": "misc/api-key.txt",
 
-    "existing_source_inputs": "data/data-example/source_inputs/source_inputs.json",
+    "use_gpu_for_local_models": true,
 
-    "dir_base_default": "data/data-example"
+    "existing_source_inputs": "data/data-example/source_inputs/data.json",
+
+    "use_auto_dirs": true,
+    "dir_base_default": "data/",
+    "use_d-m-y_time": true,
+
+    "tokens_used_log": false,
+    "run_time_log": false
+
 }

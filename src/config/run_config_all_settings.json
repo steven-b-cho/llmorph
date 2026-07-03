@@ -10,7 +10,7 @@
     "llm_list": [
         "nous-hermes-2-mixtral-8x7b-dpo",
         "llama-3.1-70b-instruct",
-        "gpt-4-1106"
+        "gpt-5.4"
     ],
 
     "data_start_index": -1,
@@ -19,11 +19,14 @@
     "checkpoint_interval": -1,
     "continue_from_checkpoint": false,
 
-    "llm_key_file": "security/token-key.jwt",
+    "llm_key_file": "misc/api-key.txt",
     "llm_wait_time": 10,
     "llm_max_retries": -1,
     "llm_endpoint": "https://api.openai.com/v1",
     "llm_for_transformation": "nous-hermes-2-mixtral-8x7b-dpo",
+    "model_for_text_similarity": "paraphrase-MiniLM-L6-v2",
+
+    "use_gpu_for_local_models": false,
 
     "only_generate_followup_inputs": false,
     "only_generate_source": false,
@@ -34,8 +37,12 @@
     "cache_verify": true,
 
     "use_existing_source_inputs": true,
-    "existing_source_inputs": "data/data-example/source_inputs/source_inputs.json",
-    
+    "existing_source_inputs": "data/data-example/source_inputs/data.json",
+
+    "tokens_used_log": false,
+    "run_time_log": false,
+
+    "use_auto_dirs": false,
     "dir_base_default":          "data/data-example",
     "dir_base_checkpoints":      "data/data-example",
     "dir_base_logs":             "data/data-example",
@@ -45,7 +52,6 @@
     "dir_base_vsi":              "data/data-example",
     "dir_base_vso":              "data/data-example",
     "dir_base_vfi":              "data/data-example",
-
     "dir_checkpoints":      "data/data-example/checkpoints",
     "dir_logs":             "data/data-example/results",
     "dir_source_inputs":    "data/data-example/source_inputs",
@@ -53,5 +59,6 @@
     "dir_followup_inputs":  "data/data-example/followup_inputs",
     "dir_vsi":              "data/data-example/verify_source_inputs",
     "dir_vso":              "data/data-example/verify_source_outputs",
-    "dir_vfi":              "data/data-example/verify_followup_inputs"
+    "dir_vfi":              "data/data-example/verify_followup_inputs",
+    "use_d-m-y_time": false
 }

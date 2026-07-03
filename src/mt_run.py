@@ -110,7 +110,7 @@ def get_save_vfi(followup_inputs: list, source_input_verification: list[bool|Non
 
 
 
-def get_source_output_data(dataset, run_sut : FuncSUT, llm_name: str, task_name: str, run_config: dict, checkpoint : dict | None):
+def get_source_output_data(dataset, run_sut: FuncSUT, llm_name: str, task_name: str, run_config: dict, checkpoint: dict | None):
     # caching source outputs
     if run_config["cache_source_outputs"]:
         output_data_filename = os.path.join(run_config["dir_source_outputs"], f"source_outputs__{llm_name}__{task_name}.json")
@@ -121,7 +121,13 @@ def get_source_output_data(dataset, run_sut : FuncSUT, llm_name: str, task_name:
             print(f"Cached source outputs found at {output_data_filename}")
         output_data = load_json(output_data_filename)
     else:
-        output_data = None
+        # Generate source outputs everytime if caching disabled
+        print(f"Generating source outputs...")
+        output_data = []
+        for i, data in tqdm(enumerate(dataset), total=len(dataset), desc=f"Generating source outputs for ({llm_name}, {task_name})"):
+            if not isinstance(data, list):
+                data = [data]
+            output_data.append(run_sut(data))
     return output_data
 
 def run_and_save_source_outputs(dataset, run_sut : FuncSUT, filename : str, llm_name : str, task_name : str, run_config : dict, checkpoint : dict | None = None):
@@ -141,7 +147,7 @@ def run_and_save_source_outputs(dataset, run_sut : FuncSUT, filename : str, llm_
     print(f"Source outputs cached to {filename}")
     save_json(outputs, filename)
 
-def get_followup_input_data(dataset, input_transformation : FuncIT, source_input_verification : list, task_name: str, relation_name: str, run_config: dict, checkpoint : dict | None):
+def get_followup_input_data(dataset, input_transformation: FuncIT, source_input_verification: list, task_name: str, relation_name: str, run_config: dict, checkpoint: dict | None):
     # caching follow-up inputs
     if run_config["cache_followup_inputs"]:
         input_data_filename = os.path.join(run_config["dir_followup_inputs"], f"followup_inputs__{task_name}__{relation_name}.json")
@@ -152,7 +158,19 @@ def get_followup_input_data(dataset, input_transformation : FuncIT, source_input
             print(f"Cached follow-up inputs found at {input_data_filename}")
         input_data = load_json(input_data_filename)
     else:
-        input_data = None
+        # Generate follow-up inputs everytime if caching disabled
+        print(f"Generating follow-up inputs...")
+        input_data = []
+        for i, data in tqdm(enumerate(dataset), total=len(dataset), desc=f"Generating follow-up inputs for ({task_name}, {relation_name})"):
+            if not isinstance(data, list):
+                data = [data]
+            
+            # verify source input
+            if source_input_verification and not source_input_verification[i]:
+                followup_inputs = None
+            else:
+                followup_inputs = input_transformation(data)
+            input_data.append(followup_inputs)
     return input_data
 
 def run_and_save_followup_inputs(dataset, input_transformation : FuncIT, source_input_verification : list, filename : str, task_name : str, relation_name : str, run_config : dict, checkpoint : dict | None = None):
@@ -312,6 +330,7 @@ def log_data(data, run_config):
         filename = f"log__{llm_name}__{task_name}__{relation_name}__{get_timestamp()}.json"
         file_path = os.path.join(run_config["dir_logs"], filename)
         save_json(data, file_path)
+        print("--------------")
         print(f"Log saved to {file_path}")
         # print(data)
     except IOError:
