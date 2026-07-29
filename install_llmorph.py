@@ -1,7 +1,7 @@
 # Tested on:
 # Linux Mint, CPU
-# Windows 11, NVIDIA
-# Windows 11, AMD
+# Windows 11, NVIDIA, Pascal
+# Windows 11, AMD, RDNA3
 import sys
 import platform
 import subprocess
@@ -9,6 +9,7 @@ import re
 from pathlib import Path
 
 REQUIRED_PYTHON_VERSION = "3.14.5"
+# If PyTorch version is upgraded in future, test if wheels for all GPU's and OS'es are available, especially ROCm on Windows
 PYTORCH_VERSION = "2.12.0"
 
 def check_python_version():
@@ -81,6 +82,7 @@ def get_nvidia_specs():
     return cuda_version
 
 # More tedious to get an AMD GPU ID without having ROCm installed
+# In general, getting the correct PyTorch build installed for an AMD GPU, especially on Windows, is a mess
 def get_amd_specs():
     if(IS_WINDOWS):  
         device_info = subprocess.check_output(["powershell", "-Command", "Get-WmiObject Win32_VideoController | Select-Object Name, PNPDeviceID"], text=True)
@@ -102,22 +104,29 @@ def get_amd_specs():
         gpu_id = int(device_id.group(1), 16)
         raw_gpu_name = re.search(r"\[(Radeon[^\]]+)\]", device_info)
         gpu_name = "AMD " + raw_gpu_name.group(1) if raw_gpu_name else "AMD GPU"
-    
-    if 29440 <= gpu_id <= 29695: # 0x7300 - 0x73FF, RDNA2
-        rocm_version = "rocm6.4"
-    elif gpu_id >= 29696: # >= 0x7400, RDNA3+
-        rocm_version = "rocm7.2"
+
+    global IS_AMD_GPU
+    # PyTorch 2.12.0 ROCm wheels only officially exist for ROCm 7.14+, which only supports RDNA 3+
+    # Custom builds for RDNA 2 might work but can't support that here, so LLMorph only supports RDNA3+
+    if gpu_id >= 29696: # >= 0x7400, RDNA3+
+        rocm_version = "rocm7.14.0"
     else:
+        IS_AMD_GPU = False
         return None
 
-    # AMD GPU detection on Windows works, but no ROCm wheel for PyTorch 2.12.0 exists for Windows at this time, 
-    # so PIP just errors and stops installer. Falling back to CPU only if on Windows with AMD card for now.
-    if(IS_WINDOWS and gpu_id is not None):
-        return None
-    else:
-        global GPU_NAME 
-        GPU_NAME = gpu_name
-        return rocm_version
+    # AMD distributes Pytorch wheels through their own repo, 
+    # so if AMD GPU is present set it here to later use different link
+    IS_AMD_GPU = True
+
+    global GPU_NAME 
+    GPU_NAME = gpu_name
+    return rocm_version
+
+# Get the matching gfx number to retroactively install GPU specfic ROCm packages, which without there is only a non functional (for execution) base ROCm build installed
+# By far the nicest way of doing it, as you cannot detect it before installing the ROCm base and avoids hardcoded lookup tables
+def get_amd_gfx():
+    result = subprocess.check_output([str(venv_python()), "-c", "import torch; print(torch.cuda.get_device_properties(0).gcnArchName)"], text=True)
+    return result.strip()
 
 # Same tedious process as for AMD
 def get_intel_specs():
@@ -173,16 +182,22 @@ def install_torch():
             print("Installing matching PyTorch build.")
             print("\"use_gpu_for_local_models\" config option can be enabled.")
             print("-" * 60)
-            return [f"torch=={PYTORCH_VERSION}", "--index-url", f"https://download.pytorch.org/whl/{pytorch_wheel}"]
+            # AMD's own repo
+            if (IS_AMD_GPU):
+                # Make wheel global for AMD specifically so it can be reused in the retroactive patch later
+                global PYTORCH_WHEEL
+                PYTORCH_WHEEL = pytorch_wheel
+                # Install ROCm base first
+                step_complete("Installing ROCm base...")
+                return [f"torch=={PYTORCH_VERSION}+{PYTORCH_WHEEL}", "--index-url", "https://repo.amd.com/rocm/whl-multi-arch/"]
+            # Default PyTorch repo
+            else:
+                return [f"torch=={PYTORCH_VERSION}", "--index-url", f"https://download.pytorch.org/whl/{pytorch_wheel}"]
         else:
             print("-" * 60)
             print("No supported GPU configuration detected. Installing CPU Only PyTorch build.")
-            # Explain why ROCm on Windows doesn't work at this time.
-            if(IS_WINDOWS):
-                print("If you're using an AMD GPU, then you currently cannot use it in LLMorph")
-                print(f"as AMD hasn't released a Windows compatible PyTorch {PYTORCH_VERSION} wheel yet.")
             print("If you do have a supported GPU with updated drivers, please restart the installer with the \"-manual-torch\" flag.")
-            print("Older GPUs (e.g. GTX 7xx or RX 5xxx) may work with custom setups but are not officially supported.")
+            print("Older GPUs (e.g. GTX 7xx or RX 6xxx) may work with custom setups but are not officially supported.")
             print("-" * 60)
             return [f"torch=={PYTORCH_VERSION}", "--index-url", "https://download.pytorch.org/whl/cpu"]
 
@@ -190,6 +205,7 @@ def install_torch():
 def choose_torch_build():
     torch_installed = subprocess.run([str(venv_python()), "-m", "pip", "show", "torch"], capture_output=True, text=True)
 
+    # Uninstall the automatically installed fallback cpu build
     if(torch_installed.returncode == 0):
         subprocess.check_call([str(venv_python()), "-m", "pip", "uninstall", "-y", "torch"])
         step_complete("Uninstalled previous PyTorch build.")
@@ -199,18 +215,13 @@ def choose_torch_build():
     print("1) CPU Only - Default and recommended if no dedicated GPU is available")
     print("2) CUDA 12.6 - For NVIDIA GPUs, Maxwell and Pascal (900 and 10 series)")
     print("3) CUDA 13.0 - For NVIDIA GPUs, Turing (16 series) and up")
-    print("4) ROCm 6.4 - For AMD GPUs, RDNA2 (6000 series)")
-    print("5) ROCm 7.2 - For AMD GPUs, RDNA3 (7000 series) and up")
-    print("6) XPU - For Intel GPUs, ARC and up")
+    print("4) ROCm 7.14.0 - For AMD GPUs, RDNA3 (7000 series) and up")
+    print("5) XPU - For Intel GPUs, ARC and up")
     print("-" * 60)
-    # Explain why ROCm on Windows doesn't work at this time.
-    if(IS_WINDOWS):
-        print("If you're using an AMD GPU, then you currently cannot use it in LLMorph")
-        print(f"as AMD hasn't released a Windows compatible PyTorch {PYTORCH_VERSION} wheel yet.")
     print("Determines whether the \"use_gpu_for_local_models\" config option can be used.")
     print("If you want to use GPU, make sure your GPU driver is up to date.")
-    print("If you are on an Apple device with an M series chip, select CPU Only, Apple MPS is included.")
-    print("Older GPUs (e.g. GTX 7xx or RX 5xxx) may work with custom setups but are not officially supported.")
+    print("If you are on an Apple device, select CPU Only, Apple MPS is included.")
+    print("Older GPUs (e.g. GTX 7xx or RX 6xxx) may work with custom setups but are not officially supported.")
     print("-" * 60)
 
     while True:
@@ -222,22 +233,17 @@ def choose_torch_build():
             return [f"torch=={PYTORCH_VERSION}", "--index-url", "https://download.pytorch.org/whl/cu126"]
         elif(choice == "3"):
             return [f"torch=={PYTORCH_VERSION}", "--index-url", "https://download.pytorch.org/whl/cu130"]
-        
-        # Prevent manual install attempt of ROCm if on Windows
-        elif(IS_WINDOWS and (choice == "4" or choice == "5")):
-            print("-" * 60)
-            print(f"ROCm is currently unavailable on Windows for PyTorch {PYTORCH_VERSION}.")
-            print("Please choose another option.")
-            print("-" * 60)
-
         elif(choice == "4"):
-            return [f"torch=={PYTORCH_VERSION}", "--index-url", "https://download.pytorch.org/whl/rocm6.4"]
+            global IS_AMD_GPU
+            IS_AMD_GPU = True
+            global PYTORCH_WHEEL
+            PYTORCH_WHEEL = "rocm7.14.0"
+            step_complete("Installing ROCm base...")
+            return [f"torch=={PYTORCH_VERSION}+rocm7.14.0", "--index-url", "https://repo.amd.com/rocm/whl-multi-arch/"]
         elif(choice == "5"):
-            return [f"torch=={PYTORCH_VERSION}", "--index-url", "https://download.pytorch.org/whl/rocm7.2"]
-        elif(choice == "6"):
             return [f"torch=={PYTORCH_VERSION}", "--index-url", "https://download.pytorch.org/whl/xpu"]
         else:
-            print("Invalid choice. Please enter a number from 1 to 6.")
+            print("Invalid choice. Please enter a number from 1 to 5.")
 
 def install_requirements_from_file():
     with open("misc/requirements.txt", "r") as file:
@@ -336,6 +342,16 @@ def main():
     else:
         torch_args = install_torch()
     pip_install(*torch_args)
+
+    # Retroactively install gpu specific ROCm on top of base, required as the ROCm base is not functional for execution
+    if (IS_AMD_GPU):
+        gfx = get_amd_gfx()
+        print("-" * 30)
+        print(f"Detected gfx: {gfx}")
+        print("Installing GPU specific ROCm build on top of base...")
+        print("-" * 30)
+        pip_install(f"torch[device-{gfx}]=={PYTORCH_VERSION}+{PYTORCH_WHEEL}", "--index-url", "https://repo.amd.com/rocm/whl-multi-arch/")
+    
     step_complete("PyTorch installed.")
 
     # Install all other requirements on top
