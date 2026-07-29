@@ -116,7 +116,56 @@
         "3": {
             "func_it": {"class": "relations.func_it.ITLeetFormat"},
             "func_or": {"class": "relations.func_or.OREquivalence"}
+        },
+        "16": {
+            "func_it": {"class": "relations.func_it.ITReplacePunctuation"},
+            "func_or": {"class": "relations.func_or.OREquivalence"}
+        },
+        "27": {
+            "func_it": {"class": "relations.func_it.ITReplaceWithTranslation"},
+            "func_or": {"class": "relations.func_or.OREquivalence"}
+        },
+        "157": {
+            "func_it": {"class": "relations.func_it.ITReplaceAlthoughWithBut"},
+            "func_or": {"class": "relations.func_or.OREquivalence"}
+        },
+        "29": {
+            "func_it": {"class": "relations.func_it.ITAbbreviationSubstitution"},
+            "func_or": {"class": "relations.func_or.OREquivalence"}
+        },
+        "153": {
+            "func_it": {"class": "relations.func_it.ITReverseCaseOfCharacter"},
+            "func_or": {"class": "relations.func_or.OREquivalence"}
+        },
+        "13": {
+            "func_it": {"class": "relations.func_it.ITSubstituteNamesPronouns"},
+            "func_or": {"class": "relations.func_or.OREquivalence"}
+        },
+        "14": {
+            "func_it": {"class": "relations.func_it.ITSubstituteCountries"},
+            "func_or": {"class": "relations.func_or.OREquivalence"}
+        },
+        "15": {
+            "func_it": {"class": "relations.func_it.ITSubstituteOccupations"},
+            "func_or": {"class": "relations.func_or.OREquivalence"}
+        },
+        "179": {
+            "func_it": {"class": "relations.func_it.ITaddRandomNoiseAtEnd"},
+            "func_or": {"class": "relations.func_or.OREquivalence"}
+        },
+        "175": {
+            "func_it": {"class": "relations.func_it.ITReverseCaseOfSomeCharacter"},
+            "func_or": {"class": "relations.func_or.OREquivalence"}
+        },
+        "160": {
+            "func_it": {"class": "relations.func_it.ITShuffleSentences"},
+            "func_or": {"class": "relations.func_or.OREquivalence"}
+        },
+        "173": {
+            "func_it": {"class": "relations.func_it.ITReplaceWordsWithRandom"},
+            "func_or": {"class": "relations.func_or.ORDifference"}
         }
+        
     },
     "question_answering": {
         "9": {

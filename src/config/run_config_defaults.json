@@ -10,11 +10,14 @@
     "checkpoint_interval": -1,
     "continue_from_checkpoint": false,
 
-    "llm_key_file": "security/token-key.jwt",
+    "llm_key_file": "misc/api-key.txt",
     "llm_wait_time": 10,
     "llm_max_retries": -1,
     "llm_endpoint": "https://api.openai.com/v1",
     "llm_for_transformation": null,
+    "model_for_text_similarity": "paraphrase-MiniLM-L6-v2",
+
+    "use_gpu_for_local_models": false,
 
     "only_generate_followup_inputs": false,
     "only_generate_source": false,
@@ -25,7 +28,12 @@
     "cache_verify": true,
 
     "use_existing_source_inputs": true,
-    "existing_source_inputs": "data/data-example/source_inputs/source_inputs.json",
-    
-    "dir_base_default": "data/data-example"
+    "existing_source_inputs": "data/data-example/source_inputs/data.json",
+
+    "use_auto_dirs": true,
+    "dir_base_default": "data/",
+    "use_d-m-y_time": true,
+
+    "tokens_used_log": false,
+    "run_time_log": false
 }

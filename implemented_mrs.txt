@@ -1,0 +1,49 @@
+# Implemeted MR list
+1     Replace characters with random
+2	    Delete characters
+3	    L33t format
+4 	  Add characters
+5	    Add spaces
+6 	  Swap characters
+7 	  Shuffle characters
+8 	  Synonym replacement
+9	    Word insertion
+10	  Antonym replacement (output: difference)
+13    Substitute between names and between pronouns
+14    Substitute between countries
+15    Substitute between occupations
+16    Replace punctuation with different punctuation
+19	  Randomise sentence order
+25	  Replace keywords with random (output: difference)
+27    Translate nouns, verbs, adjectives and adverbs into random languages
+29    Subsitutes abbreviations with full words and vice versa 
+34	  Remove keywords (output: difference)
+49	  No change
+51	  Paraphrasing
+57	  Declarative to interrogative sentence
+77	  Generate premise from hypothesis and add to premise
+78	  Generate hypothesis from premise and add to hypothesis
+79	  Generate hypothesis from hypothesis and use as hypothesis (output: not opposite)
+80	  Generate hypothesis from premise and use as premise (output: not opposite)
+84	  Add random sentence
+102	  Capitalisation of all
+120	  Back translate
+126	  Keyboard errors
+127	  Misspell
+128	  OCR errors
+136 	Passive/active voice
+137	  Replace word with another in same category
+141	  Swap symmetric entities
+142	  Swap asymmetric entities (output: opposite relation)
+149	  Singular/plural
+150	  Replace . with !
+151	  Add emphasis words
+152	  Negate (output: difference)
+153   Reverse case of all characters
+154	  Capitalise important words
+155	  Tense change
+157   Substitute between "although" and "but"
+160   Shuffle Sentences
+173   Replace words with random
+175   Reverse case of random characters
+179   Add random symbols after the sentence

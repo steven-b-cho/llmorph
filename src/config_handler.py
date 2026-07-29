@@ -46,28 +46,61 @@ def get_run_config_from_json(filename="run_config"):
     config = add_defaults_to_run_config(config)
     return config
 
-def add_defaults_to_run_config(config):
-    # uses defaults in config
-    default_config = get_config_by_filename("run_config_default")
 
-    # using defaults for missing keys
+# Get first available dir name
+def get_run_dir(base_dir, mr_number):
+    mr_number = str(mr_number)
+
+    run_idx = 1
+    while True:
+        folder_name = f"MR-{mr_number}_Run-{run_idx}"
+        full_path = os.path.join(base_dir, folder_name)
+
+        if not os.path.exists(full_path):
+            return full_path
+        run_idx += 1
+
+
+def add_defaults_to_run_config(config):
+    # Uses defaults in config
+    default_config = get_config_by_filename("run_config_defaults")
+
+    # Using defaults for missing keys
     for key, value in default_config.items():
         if key not in config:
             config[key] = value
 
-    # use first LLM in the list if not specified
+    # Use first LLM in the list if not specified
     if not config["llm_for_transformation"]:
         config["llm_for_transformation"] = config["llm_list"][0] if config["llm_list"] else None
 
-    # set dirs based on base dirs
+    # Set dirs based on base dir
     default_dir = config.get("dir_base_default")
-    keys = ["checkpoints", "logs", "source_inputs", "source_outputs", "followup_inputs", "vsi", "vso", "vfi"]
-    key_names = ["checkpoints", "results", "source_inputs", "source_outputs", "followup_inputs", "verify_source_inputs", "verify_source_outputs", "verify_followup_inputs"]
+    use_auto_dirs = config.get("use_auto_dirs", False)
+
+    # Create dynamic dirs based on mr number and run count
+    if use_auto_dirs:
+        tasks = config.get("tasks", {})
+        selected_mr = tasks.get("question_answering", [])[0]
+        run_base_dir = get_run_dir(default_dir, selected_mr)
+
+    # Use config specified dir if auto dirs is disabled
+    else:
+        run_base_dir = default_dir
+
+    keys = ["checkpoints", "logs", "source_inputs", "source_outputs",
+            "followup_inputs", "vsi", "vso", "vfi"]
+
+    key_names = ["checkpoints", "results", "source_inputs", "source_outputs",
+                 "followup_inputs", "verify_source_inputs",
+                 "verify_source_outputs", "verify_followup_inputs"]
+
     for key, key_name in zip(keys, key_names):
-        base_dir = config.get(f"dir_base_{key}", default_dir)
+        base_dir = config.get(f"dir_base_{key}", run_base_dir)
         config.setdefault(f"dir_{key}", os.path.join(base_dir, key_name))
 
     return config
+
 
 def store_run_config(config):
     config_data.config_data = config
@@ -121,6 +154,7 @@ def merge_general_relations(original_data, replacement_rules=[]):
     
     return data
 
+
 def remove_replacement_rules(original_tasks_data):
     rules_data = {}
     tasks_data = copy.deepcopy(original_tasks_data)
@@ -129,6 +163,7 @@ def remove_replacement_rules(original_tasks_data):
             rules = props.pop("replacement_rules")
             rules_data[key] = rules
     return rules_data, tasks_data
+
 
 def get_tasks_relations():
     raw_tasks = get_config_by_filename("list_tasks")
@@ -146,6 +181,7 @@ def get_checkpoint(checkpoint_dir, checkpoint_filepath = None) -> dict | None:
         return None
     print(f"Checkpoint found at {checkpoint_filepath}.")
     return load_json(checkpoint_filepath)
+
 
 def get_latest_checkpoint(checkpoint_dir) -> dict | None:
     files = glob.glob(os.path.join(checkpoint_dir, '*'))
