@@ -9,47 +9,23 @@ import nlpaug.augmenter.char as nac
 import nlpaug.augmenter.word as naw
 import nlpaug.augmenter.sentence as nas
 import re
+import nltk
+import torch
+from device_manager import DeviceManager
+
+# Order important, fixes console warnings
+import os
+os.environ["HF_HUB_DISABLE_SYMLINKS_WARNING"] = "1"
+from huggingface_hub import logging as hf_logging
+hf_logging.set_verbosity_error()
+from transformers import MarianMTModel, MarianTokenizer
 
 RANDOM_SENTENCES = load_json("./resources/random_sentences.json")
 RANDOM_WORDS = load_json("./resources/random_words.json")
-
-# MR list
-# 1	Replace characters with random
-# 2	Delete characters
-# 3	L33t format
-# 4	Add characters
-# 5	Add spaces
-# 6	Swap characters
-# 7	Shuffle characters
-# 8	Synonym replacement
-# 9	Word insertion
-# 10	Antonym replacement (output: difference)
-# 19	Randomise sentence order
-# 25	Replace keywords with random (output: difference)
-# 34	Remove keywords (output: difference)
-# 49	No change
-# 51	Paraphrasing
-# 57	Declarative to interrogative sentence
-# 77	Generate premise from hypothesis and add to premise
-# 78	Generate hypothesis from premise and add to hypothesis
-# 79	Generate hypothesis from hypothesis and use as hypothesis (output: not opposite)
-# 80	Generate hypothesis from premise and use as premise (output: not opposite)
-# 84	Add random sentence
-# 102	Capitalisation of all
-# 120	Back translate
-# 126	Keyboard errors
-# 127	Misspell
-# 128	OCR errors
-# 136	Passive/active voice
-# 137	Replace word with another in same category
-# 141	Swap symmetric entities
-# 142	Swap asymmetric entities (output: opposite relation)
-# 149	Singular/plural
-# 150	Replace . with !
-# 151	Add emphasis words
-# 152	Negate (output: difference)
-# 154	Capitalise important words
-# 155	Tense change
+ABBREVIATIONS= load_json("./resources/abbreviations.json")
+NAMES = load_json("./resources/names.json")
+COUNTRIES = load_json("./resources/countries.json")
+OCCUPATIONS = load_json("./resources/occupations.json")
 
 class CleanText():
     def clean_text(self, text):
@@ -436,7 +412,7 @@ class ITReplaceSentences(SentenceRandomBase):
 
 
 # NLPAUG
-# MR 126 (keyboard), 127 (spelling), 128 (ocr), 120 (back_translation)
+# MR-126 (keyboard), MR-127 (spelling), MR-128 (ocr), MR-120 (back_translation)
 
 nlpaug_kwargs = {
     'keyboard': {
@@ -545,7 +521,7 @@ class ReplaceKeyword(GPTKeywordBase):
         pass
 
 
-# 137 - CATEGORY
+# MR-137 - CATEGORY
 class ITReplaceKeywordCategory(ReplaceKeyword):
     def get_replace_examples(self):
         return [[[
@@ -589,7 +565,7 @@ class ITReplaceKeywordCategoryRE(ITReplaceKeywordCategory):
         output = [context_new, category_words[0], category_words[1]]
         return [output]
 
-# 8 - SYNONYM
+# MR-8 - SYNONYM
 class ITReplaceKeywordSynonym(SingleInputTransformer, ReplaceKeyword):
     def get_replace_examples(self):
         return [[[
@@ -638,7 +614,7 @@ class ReplaceKeywordDifferenceRE(ReplaceKeyword):
         return keywords_out
 
 
-# 10 - ANTONYM
+# MR-10 - ANTONYM
 class ITReplaceKeywordAntonym(SingleInputTransformer, ReplaceKeyword):
     def get_replace_examples(self):
         return [[[
@@ -685,7 +661,7 @@ class ITReplaceKeywordAntonymRE(ReplaceKeywordDifferenceRE, ITReplaceKeywordAnto
     
 
 
-# 25 - RANDOM
+# MR-25 - RANDOM
 class ITReplaceKeywordRandom(SingleInputRandomBase, ReplaceKeyword):
     def get_replace_examples(self):
         return [[[
@@ -724,7 +700,7 @@ class ITReplaceKeywordRandomRE(ReplaceKeywordDifferenceRE, ITReplaceKeywordRando
         return [[output, input[1], input[2]]]
 
 
-# 34 - REMOVE
+# MR-34 - REMOVE
 class ITRemoveKeyword(SingleInputTransformer, GPTKeywordBase):
     def remove_keywords(self, input_val, keywords):
         # return self.remove_keywords_manual(input_val, keywords)
@@ -785,7 +761,7 @@ class ITRemoveKeywordRESentence(ITRemoveKeywordRE, ITRemoveKeywordSentence):
     pass
 
 
-# 152 - NEGATE
+# MR-152 - NEGATE
 class ITNegate(GPTRunner, SingleInputTransformer, ITBase):
     def get_prompt(self):
         prompt_template = "Negate the following text with minimal change:\n\"{INPUT_0}\"\nOnly output the changed text, nothing else."
@@ -826,4 +802,403 @@ class ITNegateRE(ITNegate):
         ]
         return self.run_gpt(input, prompt_template, examples)
     
+
+# MR-16
+class ITReplacePunctuation(SingleInputTransformer):
+    def __init__(self, transform_indices=[[0]]):
+        super().__init__(transform_indices)     
+        #self.targetPunc = [".", "?", "!", ","]
+        self.targetPunc = ''.join(c for c in string.punctuation if c not in {'"'}) # Filter out double quotes as they break the input
+
+    def replace_punctuation(self, input_val: str):
+        result = []
+        for char in input_val:
+            if char in self.targetPunc:
+                newChar = random.choice(self.targetPunc)
+                while newChar == char:
+                    newChar = random.choice(self.targetPunc)
+                result.append(newChar)
+            else:
+                result.append(char)
+        return ''.join(result)
+
+    def input_transformation(self, input: list):
+        return self.transform_input(input, self.replace_punctuation)
+
+# MR-27
+class ITReplaceWithTranslation(SingleInputTransformer):
+    def __init__(self, transform_indices=[[0]]):
+        super().__init__(transform_indices)
+        self.device_manager = DeviceManager()
+        self.device = self.device_manager.device
+
+        # Don't add too many as each one needs to be downloaded and run locally
+        self.languages = {
+            "fr": "Helsinki-NLP/opus-mt-en-fr",
+            "es": "Helsinki-NLP/opus-mt-en-es",
+            "de": "Helsinki-NLP/opus-mt-en-de",
+            "it": "Helsinki-NLP/opus-mt-en-it",
+            "nl": "Helsinki-NLP/opus-mt-en-nl"
+        }
+        self.language_keys = list(self.languages.keys())
+
+        self.models = {}
+        self.tokenizers = {}
+
+        for lang, model_name in self.languages.items():
+            tokenizer = MarianTokenizer.from_pretrained(model_name)
+
+            model = MarianMTModel.from_pretrained(model_name)
+            model.to(self.device)
+            model.eval()
+
+            self.tokenizers[lang] = tokenizer
+            self.models[lang] = model
+
+    def translate_words(self, words, lang):
+
+        tokenizer = self.tokenizers[lang]
+        model = self.models[lang]
+
+        inputs = tokenizer(words, return_tensors="pt", padding=True, truncation=True)
+
+        inputs = {
+            k: v.to(self.device)
+            for k, v in inputs.items()
+        }
+
+        with torch.no_grad():
+            outputs = model.generate(**inputs)
+
+        translated_words = [
+            tokenizer.decode(output, skip_special_tokens=True)
+            for output in outputs
+        ]
+
+        return translated_words
+
+    def replace_with_translation(self, input_val: str):
+        tokens = nltk.word_tokenize(input_val)
+        tagged = nltk.pos_tag(tokens)
+        valid_tags = ("NN", "VB", "JJ", "RB") # Nouns, Verbs, Adjectives, Adverbs
+
+
+        eligible_words = [
+            (i, word, tag)
+            for i, (word, tag) in enumerate(tagged)
+            if tag.startswith(valid_tags)
+        ]
+
+        if not eligible_words:
+            return input_val
+
+        selection_amount = max(1, int(len(eligible_words) * 0.5)) # Percentage of words to be replaced
+        selected_words = random.sample(eligible_words, selection_amount)
+        translations_by_lang = {}
+
+        for i, word, _ in selected_words:
+            lang = random.choice(self.language_keys)
+
+            if lang not in translations_by_lang:
+                translations_by_lang[lang] = []
+
+            translations_by_lang[lang].append((i, word))
+
+        translated_map = {}
+
+        for lang, items in translations_by_lang.items():
+
+            indices = [i for i, _ in items]
+            words = [word for _, word in items]
+
+            translated_words = self.translate_words(words, lang)
+
+            for idx, translated in zip(indices, translated_words):
+                translated_map[idx] = translated
+
+        new_tokens = []
+
+        for i, (word, _) in enumerate(tagged):
+
+            if i in translated_map:
+                new_tokens.append(translated_map[i])
+            else:
+                new_tokens.append(word)
+
+        return " ".join(new_tokens)
+
+    def input_transformation(self, input: str):
+        return self.transform_input(input, self.replace_with_translation)
+
+# MR-157
+class ITReplaceAlthoughWithBut(SingleInputTransformer):
+    def replace_although_with_but(self, input_sentence):
+        words_to_replace = ["Although", "although", "But", "but"]
+        new_words = ["But", "but", "Although", "although"]
+        new_sentence = input_sentence
+        for i in range(len(words_to_replace)):
+            if words_to_replace[i] in input_sentence:  
+                new_sentence = input_sentence.replace(words_to_replace[i], new_words[i])
+        return new_sentence
+
+    def input_transformation(self, input: str):
+        return self.transform_input(input, self.replace_although_with_but)
     
+# MR-29
+class ITAbbreviationSubstitution(SingleInputTransformer):
+    def __init__(self, transform_indices=[[0]]):
+        super().__init__(transform_indices)
+        self.abbreviations = ABBREVIATIONS
+
+        # Build reverse mapping: abbr -> full
+        self.expansions = {v: k for k, v in self.abbreviations.items()}
+
+        # Precompute sets once
+        self.abbrev_keys = set(self.abbreviations.keys())
+        self.expansion_keys = set(self.expansions.keys())
+
+        # Compile regex once
+        self.word_pattern = re.compile(r"\b[\w.']+\b")
+
+    def match_case(self, original, replacement):
+        letters_only = [c for c in original if c.isalpha()]
+
+        if not letters_only:
+            return replacement
+
+        # Acronym: all caps and short (e.g. "US", "UK") -> title case
+        is_acronym = all(c.isupper() for c in letters_only) and len(letters_only) <= 3
+
+        if is_acronym:
+            return replacement.title()       
+        elif all(c.isupper() for c in letters_only):
+            return replacement.upper()       
+        elif letters_only[0].isupper():
+            return replacement.capitalize() 
+        else:
+            return replacement             
+
+    def _try_substitute(self, text, mapping, key_set):
+
+        tokens = self.word_pattern.findall(text)
+        tokens_lower = [t.lower() for t in tokens]
+
+        candidates = [t for t in tokens_lower if t in key_set]
+
+        if not candidates:
+            return text
+
+        # pick a random candidate and substitute
+        chosen = random.choice(candidates)
+        replacement = mapping[chosen]
+
+        # Handle dot-ending abbreviations
+        escaped = re.escape(chosen)
+        if chosen.endswith("."):
+            pattern = re.compile(r"\b" + escaped + r"(?=\s|$)", re.IGNORECASE)
+        else:
+            pattern = re.compile(r"\b" + escaped + r"\b", re.IGNORECASE)
+
+        match = pattern.search(text)
+        if not match:
+            return text
+
+        original = match.group(0)
+        repl = self.match_case(original, replacement)
+        return pattern.sub(repl, text, count=1)
+
+    def transform(self, text):
+        direction = random.choice(["abbreviate", "expand"])
+
+        if direction == "abbreviate":
+            mapping = self.abbreviations
+            key_set = self.abbrev_keys      # reuse precomputed set
+        else:
+            mapping = self.expansions
+            key_set = self.expansion_keys   # reuse precomputed set
+
+        return self._try_substitute(text, mapping, key_set)
+
+    def input_transformation(self, input: list):
+        return self.transform_input(input, self.transform)
+
+# MR-153
+class ITReverseCaseOfCharacter(SingleInputTransformer):
+    def reverseCaseOfCharacter(self, input_sentence):
+        new_sentence = ""
+        for i in input_sentence:
+            if i.isupper():
+                new_sentence += i.lower()
+            elif i.islower():
+                new_sentence += i.upper()
+            else: 
+                new_sentence += str(i)
+        return new_sentence
+
+    def input_transformation(self, input: list):
+        return self.transform_input(input, self.reverseCaseOfCharacter)
+
+# MR-13
+class ITSubstituteNamesPronouns(SingleInputTransformer):
+    def substitute_names_pronouns(self, input_sentence):
+        names_list = NAMES["names"]
+        pronouns = ["He", "he", "She", "she", "They", "they"]
+
+        output_sentence = input_sentence
+        used_replacements = set()
+
+        for name in names_list:
+            pattern = r'\b' + re.escape(name) + r'\b'
+
+            if re.search(pattern, output_sentence, flags=re.IGNORECASE):
+                choices = list(set(names_list) - used_replacements)
+
+                if not choices:
+                    choices = names_list
+
+                replacement = random.choice(choices)
+                used_replacements.add(replacement)
+
+                output_sentence = re.sub(pattern, replacement, output_sentence, flags=re.IGNORECASE)
+
+        for pronoun in pronouns:
+            pattern = r'\b' + re.escape(pronoun) + r'\b'
+
+            if re.search(pattern, output_sentence):
+                replacement = random.choice(pronouns)
+                output_sentence = re.sub(pattern, replacement, output_sentence)
+
+        return output_sentence
+    
+    def input_transformation(self, input: list):
+        return self.transform_input(input, self.substitute_names_pronouns)
+
+# MR-14
+class ITSubstituteCountries(SingleInputTransformer):
+    def substitute_countries(self, input_sentence):
+        country_list = COUNTRIES["countries"]
+        output_sentence = input_sentence
+        used_replacements = set()
+
+        for country in country_list:
+            pattern = r'\b' + re.escape(country) + r'\b'
+
+            if re.search(pattern, output_sentence, flags=re.IGNORECASE):
+                choices = list(set(country_list) - used_replacements)
+
+                if not choices:
+                    choices = country_list
+
+                replacement = random.choice(choices)
+                used_replacements.add(replacement)
+                output_sentence = re.sub(pattern, replacement, output_sentence, flags=re.IGNORECASE)
+
+        return output_sentence
+    
+    def input_transformation(self, input: list):
+        return self.transform_input(input, self.substitute_countries)
+    
+# MR-15
+class ITSubstituteOccupations(SingleInputTransformer):
+    def substitute_occupations(self, input_sentence):
+        occupations_list = OCCUPATIONS["occupations"]
+        output_sentence = input_sentence
+        used_replacements = set()
+
+        for occupation in occupations_list:
+            pattern = r'\b' + re.escape(occupation) + r'\b'
+
+            if re.search(pattern, output_sentence, flags=re.IGNORECASE):
+                choices = list(set(occupations_list) - used_replacements)
+
+                if not choices:
+                    choices = occupations_list
+
+                replacement = random.choice(choices)
+                used_replacements.add(replacement)
+                output_sentence = re.sub(pattern, replacement, output_sentence, flags=re.IGNORECASE)
+
+        return output_sentence
+    
+    def input_transformation(self, input: list):
+        return self.transform_input(input, self.substitute_occupations)
+
+# MR-175
+class ITReverseCaseOfSomeCharacter(SingleInputTransformer):        
+    def reverseCaseOfSomeCharacter(self, input_sentence):
+        new_sentence = ""
+        change_percentage = 0.5
+        for i in input_sentence:
+            if random.random() < change_percentage and i.isalpha():
+                if i.isupper():
+                    new_sentence += i.lower()
+                elif i.islower():
+                    new_sentence += i.upper()
+            else: 
+                new_sentence += str(i)
+        return new_sentence
+
+    def input_transformation(self, input: list):
+        return self.transform_input(input, self.reverseCaseOfSomeCharacter)
+
+# MR-179
+class ITaddRandomNoiseAtEnd(SingleInputTransformer):
+    def addRandomNoiseAtEnd(self, input_sentence):
+        number_of_noise = random.randint(1, 10)
+        for i in range(number_of_noise):
+            noise = random.choice(string.punctuation)
+            input_sentence += noise
+        return input_sentence
+
+    def input_transformation(self, input: list):
+        return self.transform_input(input, self.addRandomNoiseAtEnd)
+
+# MR-160
+class ITShuffleSentences(SingleInputTransformer):
+    def shuffle_sentences(self, text: str):
+        # Split into sentences, keeping the punctuation attached
+        sentences = re.split(r'(?<=[.?!])\s+', text.strip()) # check for (".","?","!")
+        
+        # If only one sentence or empty, return as-is
+        if len(sentences) <= 1:
+            return text
+        
+        random.shuffle(sentences)
+        
+        return " ".join(sentences)
+    
+    def __init__(self, transform_indices=[[0]]):
+        super().__init__(transform_indices)
+    
+    def input_transformation(self, input_val: str):
+        return self.transform_input(input_val, self.shuffle_sentences)
+
+# MR-173
+class ITReplaceWordsWithRandom(SingleInputTransformer):
+    def replaceWithRandom(self, input_val: str) -> str:
+        blacklist = {"a", "an", "the", "of", "in", "and", "but", "is", "or", "to"}
+        
+        words = input_val.split()
+        
+        # Filter eligible words by index
+        eligible_indices = [
+            i for i, word in enumerate(words)
+            if word.translate(str.maketrans("", "", string.punctuation)).lower() not in blacklist
+        ]
+        
+        # If no eligible words, return the original sentence unchanged
+        if not eligible_indices:
+            return input_val
+        
+        # Pick one random eligible index to replace
+        replace_index = random.choice(eligible_indices)
+        words[replace_index] = random.choice(self.random_words)
+        
+        return " ".join(words)
+
+    def __init__(self, transform_indices=[[0]]):
+        super().__init__(transform_indices)
+        self.random_words = RANDOM_WORDS
+
+    def input_transformation(self, input_val: str):
+        return self.transform_input(input_val, self.replaceWithRandom)

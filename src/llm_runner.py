@@ -11,38 +11,57 @@ llm_wait_time = config_data.get("llm_wait_time")
 llm_max_retries = config_data.get("llm_max_retries")
 endpoint = config_data.get("llm_endpoint")
 llm_for_transformation = config_data.get("llm_for_transformation")
+tokens_used_log = config_data.get("tokens_used_log", False)
+
+TOTAL_TOKENS = 0
+TOTAL_PROMPT_TOKENS = 0
+TOTAL_COMPLETION_TOKENS = 0
 
 if llm_max_retries is None or llm_max_retries <= 0:
     llm_max_retries = 9999999
 
-def read_sec_token():
+def read_api_key():
     """
-    get the security token stored in a non versioned file needed to access the endpoint
+    get the api key stored in a non versioned file needed to access the endpoint
     @return:
     """
-    print("Reading security token...")
+    print("Reading API Key...")
     f = open(llm_key_file, "rt")
     mytoken = f.read()
     f.close()
     return (mytoken)
 
-api_key = read_sec_token()
+api_key = read_api_key()
 
 client = OpenAI(api_key = api_key, base_url = endpoint)
 
 def get_llm_function(model):
     def run_llm(messages, max_retries=llm_max_retries):
+        global TOTAL_TOKENS
+        global TOTAL_PROMPT_TOKENS
+        global TOTAL_COMPLETION_TOKENS
 
         for attempt in range(max_retries):
             try:
                 chat_completion = client.chat.completions.create(
-                    model=model,
-                	messages=messages,
-                	stream = False,
+                    model = model,
+                    messages = messages,
+                    stream = False,
                 )
 
-                generated_text = chat_completion.choices[0].message.content
-                generated_text = str(generated_text)
+                generated_text = str(chat_completion.choices[0].message.content)
+
+                usage = chat_completion.usage
+
+                TOTAL_TOKENS += usage.total_tokens
+                TOTAL_PROMPT_TOKENS += usage.prompt_tokens
+                TOTAL_COMPLETION_TOKENS += usage.completion_tokens
+
+                if(tokens_used_log):
+                    print("--------------")
+                    print(f"Step tokens used: {usage.total_tokens} (Prompt: {usage.prompt_tokens}, Completion: {usage.completion_tokens})")
+                    print("--------------")
+
                 return generated_text
             
             except Timeout:
@@ -73,9 +92,7 @@ def get_llm_function(model):
         print(f"Failed to get response after {max_retries} attempts")
         sys.exit(1)
         # return None
-
     return run_llm
-
 
 # this function is used as a tool; this llm is not being tested
 def run_template_gpt(inputs : list, prompt_template : str, examples : list=[], placeholder_template="{INPUT_#}"):

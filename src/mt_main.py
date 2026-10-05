@@ -1,6 +1,7 @@
 import os
 from config_handler import get_raw_run_config_from_json, add_defaults_to_run_config, store_run_config, get_tasks_relations, get_checkpoint
 from mt_config_run_handler import do_run_tests
+import time
 
 # main entry point
 def run_using_config(run_config: dict):
@@ -62,7 +63,24 @@ def save_tasks_relations():
 
 def main():
     run_config = get_raw_run_config_from_json()
+
+    tokens_used_log = run_config.get("tokens_used_log", False)
+    time_logging = run_config.get("run_time_log", False)
+
+    if time_logging:
+        start_time = time.perf_counter()
+
     run_using_config(run_config)
+
+    import llm_runner # Needs to be imported late to avoid crash
+    if(tokens_used_log):
+            print("==============")
+            print(f"Total tokens used: {llm_runner.TOTAL_TOKENS} (Prompt: {llm_runner.TOTAL_PROMPT_TOKENS}, Completion: {llm_runner.TOTAL_COMPLETION_TOKENS})")
+            print("==============")
+
+    if time_logging:
+        elapsed = time.perf_counter() - start_time
+        print(f"Total run time: {elapsed:.2f} seconds")
 
 if __name__ == '__main__':
     main()
