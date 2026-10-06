@@ -154,7 +154,7 @@ If you would like to contribute to this project by implementing new MRs or tasks
 
 ## Contact
 
-If you have any questions, feel free to contact: steven.cho@aucklanduni.ac.nz
+If you have any questions, feel free to contact: scho518@aucklanduni.ac.nz
 
 ## Citation
 
